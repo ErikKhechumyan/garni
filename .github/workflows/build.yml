@@ -1,4 +1,4 @@
-name: Build APK with Buildozer
+name: Build APK
 
 on:
   push:
@@ -11,18 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Cache .buildozer_global
-        uses: actions/cache@v2
-        with:
-          path: .buildozer_global
-          key: buildozer-global-${{ hashFiles('buildozer.spec') }}
-
-      - name: Cache .buildozer
-        uses: actions/cache@v2
-        with:
-          path: .buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}
 
       - name: Build APK with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
