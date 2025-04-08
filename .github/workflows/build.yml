@@ -2,99 +2,32 @@ name: Build Kivy APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y zip unzip openjdk-17-jdk python3-pip
-          pip install --upgrade pip
-          pip install buildozer Cython
-      - name: Install Linux build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y autoconf automake libtool pkg-config gettext
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          autoconf automake libtool pkg-config \
+          libasound2-dev libavformat-dev libavcodec-dev libswscale-dev
 
-      - name: Install required packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            gettext \
-            libasound2-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            libswscale-dev
+    - name: Install Buildozer
+      run: |
+        pip install --upgrade pip
+        pip install buildozer
 
-      
-      - name: Install cmdline-tools
-        run: |
-          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-          cd $ANDROID_SDK_ROOT/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-          unzip cmdline-tools.zip -d latest
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
-      
-      - name: Install Android Build Tools (with aidl)
-        run: |
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;30.0.3"
-      
-      - name: Check AIDL exists
-        run: |
-          ls -l $ANDROID_SDK_ROOT/build-tools/30.0.3/aidl || (echo "AIDL not found!" && exit 1)
-
-
-      - name: Fix Android SDK cmdline-tools path
-        run: |
-          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" ]; then
-            mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
-          elif [ ! -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
-            mv $ANDROID_SDK_ROOT/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest
-          fi
-
-      - name: Add cmdline-tools to PATH
-        run: |
-          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
-
-      - name: Install SDK components
-        run: |
-          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
-          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT \
-            "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-
-      - name: Initialize Buildozer
-        run: |
-          buildozer init || true
-
-      - name: Build APK
-        run: |
-          buildozer android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug.apk
-          path: bin/*.apk
-      
+    - name: Build APK
+      run: |
+        buildozer android debug
