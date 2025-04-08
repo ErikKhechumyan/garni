@@ -28,12 +28,14 @@ jobs:
           pip install --upgrade pip
           pip install buildozer Cython
 
-      - name: Fix Android SDK permissions and path
+      - name: Fix Android SDK cmdline-tools path
         run: |
-          mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest
-          unzip -q commandlinetools-linux-*.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools/latest
-          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} \
-            "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          # Detect and link correct cmdline-tools subdirectory
+          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" ]; then
+            mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          elif [ ! -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
+            mv $ANDROID_SDK_ROOT/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest
+          fi
 
       - name: Add cmdline-tools to PATH
         run: echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
