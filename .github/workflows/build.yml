@@ -1,16 +1,17 @@
-name: Build Kivy APK
+name: Build APK
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -22,37 +23,35 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y zip unzip openjdk-17-jdk python3-pip \
-          build-essential ccache libncurses5 libffi-dev libssl-dev \
+          build-essential ccache libffi-dev libssl-dev \
           libsqlite3-dev libjpeg-dev libfreetype6-dev liblzma-dev \
           zlib1g-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
           gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav
 
-    - name: Install Buildozer and Cython
+    - name: Install buildozer
       run: |
-        python3 -m pip install --upgrade pip
-        pip install --user buildozer cython
+        pip install --upgrade pip
+        pip install buildozer cython virtualenv
 
-    - name: Install Android SDK manually
+    - name: Create virtualenv
       run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk/cmdline-tools
-        curl -o sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
-        unzip sdk.zip -d latest
-        export ANDROID_SDK_ROOT=$HOME/android-sdk
-        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
-        yes | sdkmanager --licenses
-        sdkmanager "platform-tools" "platforms;android-31" "build-tools;33.0.2"
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt || true
+
+    - name: Initialize buildozer.spec (if not exists)
+      run: |
+        if [ ! -f buildozer.spec ]; then
+          buildozer init
+        fi
 
     - name: Build APK
-      env:
-        ANDROIDSDK: $HOME/android-sdk
-        ANDROID_NDK_HOME: $HOME/.buildozer/android/platform/android-ndk-r25b
-        PATH: $HOME/.local/bin:$HOME/android-sdk/cmdline-tools/latest/bin:$PATH
       run: |
+        source venv/bin/activate
         buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: kivy-app-debug-apk
+        name: my-kivy-app
         path: bin/*.apk
