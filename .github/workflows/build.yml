@@ -32,8 +32,7 @@ jobs:
         run: |
           rm -rf $ANDROID_SDK_ROOT/cmdline-tools/latest || true
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
-          shopt -s extglob
-          cp -r $ANDROID_SDK_ROOT/cmdline-tools/!('latest') $ANDROID_SDK_ROOT/cmdline-tools/latest/
+          cp -r $ANDROID_SDK_ROOT/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/ || true
 
       - name: Initialize Buildozer
         run: |
