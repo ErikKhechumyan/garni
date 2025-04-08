@@ -30,10 +30,11 @@ jobs:
             gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
             gstreamer1.0-libav git curl
 
-      - name: Install Buildozer
+      - name: Install Buildozer and dependencies
         run: |
           pip install --upgrade pip
-          pip install buildozer
+          pip install buildozer cython
+          python3 -m pip install --user python-for-android
 
       - name: Accept Android SDK Licenses
         run: |
@@ -42,7 +43,7 @@ jobs:
 
       - name: Initialize Buildozer
         run: |
-          buildozer android clean
+          buildozer init || true  # если уже инициализировано — не вызывать ошибку
 
       - name: Build APK
         run: |
