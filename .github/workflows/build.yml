@@ -27,6 +27,27 @@ jobs:
           sudo apt install -y zip unzip openjdk-17-jdk python3-pip
           pip install --upgrade pip
           pip install buildozer Cython
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool pkg-config gettext
+         
+      - name: Install cmdline-tools
+        run: |
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          cd $ANDROID_SDK_ROOT/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d latest
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+      
+      - name: Install Android Build Tools (with aidl)
+        run: |
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;30.0.3"
+      
+      - name: Check AIDL exists
+        run: |
+          ls -l $ANDROID_SDK_ROOT/build-tools/30.0.3/aidl || (echo "AIDL not found!" && exit 1)
+
 
       - name: Fix Android SDK cmdline-tools path
         run: |
@@ -61,20 +82,4 @@ jobs:
         with:
           name: app-debug.apk
           path: bin/*.apk
-          
-      - name: Install cmdline-tools
-        run: |
-          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-          cd $ANDROID_SDK_ROOT/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-          unzip cmdline-tools.zip -d latest
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
       
-      - name: Install Android Build Tools (with aidl)
-        run: |
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;30.0.3"
-      
-      - name: Check AIDL exists
-        run: |
-          ls -l $ANDROID_SDK_ROOT/build-tools/30.0.3/aidl || (echo "AIDL not found!" && exit 1)
-
