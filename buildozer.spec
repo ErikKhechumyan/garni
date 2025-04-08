@@ -31,7 +31,8 @@ log_level = 2
 strip = true
 copy_libs = 1
 android.build_tools_version = 31.0.0
-
+android.accept_sdk_license = True
+android.skip_update = False
 [buildozer]
 log_level = 2
 warn_on_root = 1
