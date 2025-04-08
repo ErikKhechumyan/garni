@@ -11,7 +11,6 @@ fullscreen = 1
 android.permissions = INTERNET,WAKE_LOCK
 android.minapi = 21
 android.ndk = 25b
-android.sdk = 31
 android.ndk_path = 
 android.sdk_path = 
 android.entrypoint = main.py
