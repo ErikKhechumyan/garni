@@ -19,31 +19,32 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential ccache zip unzip openjdk-17-jdk python3-pip
-          python3 -m pip install --upgrade pip
-          pip install --user buildozer
+          sudo apt install -y zip unzip openjdk-17-jdk python3-pip
+          pip install --upgrade pip
+          pip install buildozer Cython
 
       - name: Fix Android SDK cmdline-tools
         run: |
           rm -rf $ANDROID_SDK_ROOT/cmdline-tools/latest || true
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
-          cp -r $ANDROID_SDK_ROOT/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/
+          shopt -s extglob
+          cp -r $ANDROID_SDK_ROOT/cmdline-tools/!('latest') $ANDROID_SDK_ROOT/cmdline-tools/latest/
 
-      - name: Initialize buildozer
+      - name: Initialize Buildozer
         run: |
-          ~/.local/bin/buildozer android
+          buildozer init || true
 
       - name: Build APK
         run: |
-          ~/.local/bin/buildozer android debug
+          buildozer android debug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: garni-app
+          name: app-debug.apk
           path: bin/*.apk
