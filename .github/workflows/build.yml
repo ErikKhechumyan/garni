@@ -48,3 +48,14 @@ jobs:
       - name: Build APK
         run: |
           buildozer android debug
+          
+      - name: Install cmdline-tools
+        run: |
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
+          cd $ANDROID_SDK_ROOT/cmdline-tools/latest
+          curl -o tools.zip https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
+          unzip tools.zip
+          rm tools.zip
+      
+      - name: Accept licenses
+        run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
