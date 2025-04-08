@@ -39,11 +39,14 @@ jobs:
         source venv/bin/activate
         pip install -r requirements.txt || true
 
-    - name: Initialize buildozer.spec (if not exists)
+    - name: Install Android SDK and accept licenses
       run: |
-        if [ ! -f buildozer.spec ]; then
-          buildozer init
-        fi
+        mkdir -p $HOME/.android
+        echo '### Accepting licenses' 
+        yes | sdkmanager --licenses || true
+
+        echo "Installing build-tools"
+        sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
 
     - name: Build APK
       run: |
