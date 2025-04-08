@@ -30,7 +30,9 @@ android.logcat_filters = *:S python:D
 log_level = 2
 strip = true
 copy_libs = 1
-android.build_tools_version = 31.0.0
+
+
+android.build_tools_version = 30.0.3
 android.accept_sdk_license = True
 android.skip_update = False
 [buildozer]
