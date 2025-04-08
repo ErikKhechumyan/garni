@@ -30,6 +30,7 @@ android.logcat_filters = *:S python:D
 log_level = 2
 strip = true
 copy_libs = 1
+android.build_tools_version = 31.0.0
 
 [buildozer]
 log_level = 2
