@@ -30,7 +30,7 @@ android.logcat_filters = *:S python:D
 log_level = 2
 strip = true
 copy_libs = 1
-
+bootstrap = webview
 
 android.build_tools_version = 30.0.3
 android.accept_sdk_license = True
