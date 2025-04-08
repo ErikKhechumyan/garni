@@ -24,7 +24,7 @@ orientation = portrait
 fullscreen = 0
 
 # Android settings
-android.sdk_path = ${ANDROID_SDK_ROOT}
+
 android.ndk = 23b
 android.api = 31
 android.minapi = 21
