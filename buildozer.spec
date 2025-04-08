@@ -373,6 +373,10 @@ ios.ios_deploy_branch = 1.10.0
 # (bool) Whether or not to sign the code
 ios.codesign.allowed = false
 
+
+
+android.accept_sdk_license = True
+android.skip_update = False
 # (str) Name of the certificate to use for signing the debug version
 # Get a list of available identities: buildozer ios list_identities
 #ios.codesign.debug = "iPhone Developer: <lastname> <firstname> (<hexstring>)"
