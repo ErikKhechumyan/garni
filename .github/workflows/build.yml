@@ -61,3 +61,6 @@ jobs:
         with:
           name: app-debug.apk
           path: bin/*.apk
+          
+      - name: Install Android Build Tools
+        run: sdkmanager "build-tools;31.0.0"
